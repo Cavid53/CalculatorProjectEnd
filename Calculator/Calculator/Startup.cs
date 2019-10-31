@@ -2,7 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CalculationProject;
+using Calculator.Controllers;
 using Calculator.DAL;
+using Calculator.ImplementInterface;
+using Calculator.Interface;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -31,7 +35,10 @@ namespace Calculator
             services.AddDbContext<CalculatorDbContext>(option =>
                      option.UseSqlServer(Configuration["CalculatorDatabase:Db"]));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-           
+
+            services.AddSingleton<CalculatorSoap>(new CalculatorSoapClient(CalculatorSoapClient.EndpointConfiguration.CalculatorSoap12));
+            services.AddSingleton<IMathematical, MathMethods>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

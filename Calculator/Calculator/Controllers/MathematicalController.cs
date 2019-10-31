@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CalculationProject;
 using Calculator.DAL;
 using Calculator.Helpers;
+using Calculator.Interface;
 using Calculator.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,15 +19,16 @@ namespace Calculator.Controllers
     [ApiController]
     public class MathematicalController : ControllerBase
     {
-        private CalculatorSoapClient _calculatorSoap = new CalculatorSoapClient(CalculatorSoapClient.EndpointConfiguration.CalculatorSoap12);
+        private IMathematical _mathematical;
         private CalculatorDbContext _dbContext;
         private readonly ILogger<MathematicalController> _logger;
 
 
-        public MathematicalController(CalculatorDbContext dbContext, ILogger<MathematicalController> logger)
+        public MathematicalController(CalculatorDbContext dbContext, ILogger<MathematicalController> logger, IMathematical mathematical)
         {
             _dbContext = dbContext;
             _logger = logger;
+            _mathematical = mathematical;
         }
 
 
@@ -48,7 +50,7 @@ namespace Calculator.Controllers
                 });
                 await _dbContext.SaveChangesAsync();
 
-                var response = await _calculatorSoap.AddAsync(number.FirstNum, number.SecondNum);
+                var response = await _mathematical.AddAsync(number.FirstNum, number.SecondNum);
 
                 await _dbContext.Reports.AddAsync(new Report
                 {
@@ -95,7 +97,7 @@ namespace Calculator.Controllers
                 });
                 await _dbContext.SaveChangesAsync();
 
-                var response = await _calculatorSoap.SubtractAsync(number.FirstNum, number.SecondNum);
+                var response = await _mathematical.SubtractAsync(number.FirstNum, number.SecondNum);
 
                 await _dbContext.Reports.AddAsync(new Report
                 {
@@ -144,7 +146,7 @@ namespace Calculator.Controllers
 
                 await _dbContext.SaveChangesAsync();
 
-                var response = await _calculatorSoap.MultiplyAsync(number.FirstNum, number.SecondNum);
+                var response = await _mathematical.MultiplyAsync(number.FirstNum, number.SecondNum);
 
                 await _dbContext.Reports.AddAsync(new Report
                 {
@@ -191,7 +193,7 @@ namespace Calculator.Controllers
 
                 await _dbContext.SaveChangesAsync();
 
-                var response = await _calculatorSoap.DivideAsync(number.FirstNum, number.SecondNum);
+                var response = await _mathematical.DivideAsync(number.FirstNum, number.SecondNum);
 
                 await _dbContext.Reports.AddAsync(new Report
                 {
